@@ -121,3 +121,23 @@ func TestSliceContains(t *testing.T) {
 		SliceNotContains(t, []int{1, 2}, 1)
 	})
 }
+
+func TestSamePtr(t *testing.T) {
+	type TStruct struct {
+		x int
+	}
+	mt := newMyTesting(t)
+	mt.Success(func(t Testing) {
+		v1 := &TStruct{}
+		v2 := v1
+		SamePtr(t, v1, v2)
+		v3 := &TStruct{}
+		NotSamePtr(t, v1, v3)
+	})
+	mt.Fail(func(t Testing) {
+		SamePtr(t, &TStruct{}, &TStruct{})
+		v1 := &TStruct{}
+		v2 := v1
+		NotSamePtr(t, v1, v2)
+	})
+}

@@ -62,3 +62,18 @@ func isEmpty(object any) bool {
 		return reflect.DeepEqual(object, zero.Interface())
 	}
 }
+
+func samePointers(first, second any) bool {
+	firstPtr, secondPtr := reflect.ValueOf(first), reflect.ValueOf(second)
+	if firstPtr.Kind() != reflect.Ptr || secondPtr.Kind() != reflect.Ptr {
+		return false
+	}
+
+	firstType, secondType := reflect.TypeOf(first), reflect.TypeOf(second)
+	if firstType != secondType {
+		return false
+	}
+
+	// compare pointer addresses
+	return first == second
+}

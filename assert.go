@@ -9,21 +9,21 @@ import (
 	"strings"
 )
 
-func Equal[T any](t Testing, got T, want T) {
+func Equal[T any](t Testing, expected T, actual T) {
 	if h, ok := t.(Helper); ok {
 		h.Helper()
 	}
-	if !equal(got, want) {
-		t.Fatalf("Not equal: \nrunFail:  %#v\n want: %#v", got, want)
+	if !equal(expected, actual) {
+		t.Fatalf("Not equal: \nrunFail:  %#v\n actual: %#v", expected, actual)
 	}
 }
 
-func NotEqual[T any](t Testing, got T, want T) {
+func NotEqual[T any](t Testing, expected T, actual T) {
 	if h, ok := t.(Helper); ok {
 		h.Helper()
 	}
-	if equal(got, want) {
-		t.Fatalf("Should not equal: %#v", want)
+	if equal(expected, actual) {
+		t.Fatalf("Should not equal: %#v", actual)
 	}
 }
 
@@ -100,38 +100,58 @@ func NotEmpty(t Testing, got any) {
 	}
 }
 
-func StringContains(t Testing, got string, want string) {
+func StringContains(t Testing, s string, substr string) {
 	if h, ok := t.(Helper); ok {
 		h.Helper()
 	}
-	if !strings.Contains(got, want) {
-		t.Fatalf("%#v does not contains %#v", got, want)
+	if !strings.Contains(s, substr) {
+		t.Fatalf("%#v does not substr %#v", s, substr)
 	}
 }
 
-func StringNotContains(t Testing, got string, want string) {
+func StringNotContains(t Testing, s string, substr string) {
 	if h, ok := t.(Helper); ok {
 		h.Helper()
 	}
-	if strings.Contains(got, want) {
-		t.Fatalf("%#v should not contains %#v", got, want)
+	if strings.Contains(s, substr) {
+		t.Fatalf("%#v should not substr %#v", s, substr)
 	}
 }
 
-func SliceContains[S ~[]E, E comparable](t Testing, got S, want E) {
+func SliceContains[S ~[]E, E comparable](t Testing, values S, item E) {
 	if h, ok := t.(Helper); ok {
 		h.Helper()
 	}
-	if !slices.Contains(got, want) {
-		t.Fatalf("%#v does not contains %#v", got, want)
+	if !slices.Contains(values, item) {
+		t.Fatalf("%#v does not contains %#v", values, item)
 	}
 }
 
-func SliceNotContains[S ~[]E, E comparable](t Testing, got S, want E) {
+func SliceNotContains[S ~[]E, E comparable](t Testing, values S, item E) {
 	if h, ok := t.(Helper); ok {
 		h.Helper()
 	}
-	if slices.Contains(got, want) {
-		t.Fatalf("%#v should not contains %#v", got, want)
+	if slices.Contains(values, item) {
+		t.Fatalf("%#v should not contains %#v", values, item)
+	}
+}
+
+func SamePtr[T any](t Testing, expected T, actual T) {
+	if h, ok := t.(Helper); ok {
+		h.Helper()
+	}
+	if !samePointers(expected, actual) {
+		t.Fatalf("Not same: \n"+
+			"expected: %p %#v\n"+
+			"actual  : %p %#v", expected, expected, actual, actual)
+	}
+}
+
+func NotSamePtr[T any](t Testing, expected T, actual T) {
+	if h, ok := t.(Helper); ok {
+		h.Helper()
+	}
+	if samePointers(expected, actual) {
+		t.Fatalf("Expected and actual point to the same object: %p %#v", expected, expected)
 	}
 }
