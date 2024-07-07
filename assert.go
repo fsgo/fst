@@ -136,7 +136,7 @@ func SliceNotContains[S ~[]E, E comparable](t Testing, values S, item E) {
 	}
 }
 
-func SamePtr[T any](t Testing, expected T, actual T) {
+func SamePtr(t Testing, expected any, actual any) {
 	if h, ok := t.(Helper); ok {
 		h.Helper()
 	}
@@ -147,7 +147,7 @@ func SamePtr[T any](t Testing, expected T, actual T) {
 	}
 }
 
-func NotSamePtr[T any](t Testing, expected T, actual T) {
+func NotSamePtr(t Testing, expected any, actual any) {
 	if h, ok := t.(Helper); ok {
 		h.Helper()
 	}
