@@ -124,7 +124,7 @@ func TestSliceContains(t *testing.T) {
 
 func TestSamePtr(t *testing.T) {
 	type TStruct struct {
-		x int
+		_ int
 	}
 	mt := newMyTesting(t)
 	mt.Success(func(t Testing) {
@@ -139,5 +139,92 @@ func TestSamePtr(t *testing.T) {
 		v1 := &TStruct{}
 		v2 := v1
 		NotSamePtr(t, v1, v2)
+	})
+}
+
+func TestLess(t *testing.T) {
+	mt := newMyTesting(t)
+	mt.Success(func(t Testing) {
+		Less(t, 1, 2)
+		Less(t, "a", "b")
+		Less(t, 0.1, 0.2)
+		Less(t, uint32(1), uint32(2))
+	})
+	mt.Fail(func(t Testing) {
+		Less(t, 3, 2)
+		Less(t, "c", "b")
+		Less(t, 0.3, 0.2)
+		Less(t, uint32(3), uint32(2))
+	})
+}
+
+func TestLessOrEqual(t *testing.T) {
+	mt := newMyTesting(t)
+	mt.Success(func(t Testing) {
+		LessOrEqual(t, 1, 2)
+		LessOrEqual(t, 2, 2)
+
+		LessOrEqual(t, "a", "b")
+		LessOrEqual(t, "b", "b")
+
+		LessOrEqual(t, 0.1, 0.2)
+		LessOrEqual(t, 0.2, 0.2)
+
+		LessOrEqual(t, uint32(1), uint32(2))
+		LessOrEqual(t, uint32(2), uint32(2))
+	})
+	mt.Fail(func(t Testing) {
+		LessOrEqual(t, 3, 2)
+		LessOrEqual(t, "c", "b")
+		LessOrEqual(t, 0.3, 0.2)
+		LessOrEqual(t, uint32(3), uint32(2))
+	})
+}
+
+func TestGreater(t *testing.T) {
+	type intA int
+	mt := newMyTesting(t)
+	mt.Success(func(t Testing) {
+		Greater(t, 3, 2)
+		Greater(t, intA(3), intA(2))
+		Greater(t, "c", "b")
+		Greater(t, 0.3, 0.2)
+		Greater(t, uint32(3), uint32(2))
+	})
+	mt.Fail(func(t Testing) {
+		Greater(t, 1, 2)
+		Greater(t, 2, 2)
+
+		Greater(t, "a", "b")
+		Greater(t, "b", "b")
+
+		Greater(t, 0.2, 0.2)
+		Greater(t, 0.1, 0.2)
+
+		Greater(t, uint32(2), uint32(2))
+		Greater(t, uint32(1), uint32(2))
+	})
+}
+
+func TestGreaterOrEqual(t *testing.T) {
+	mt := newMyTesting(t)
+	mt.Success(func(t Testing) {
+		GreaterOrEqual(t, 3, 2)
+		GreaterOrEqual(t, 3, 3)
+
+		GreaterOrEqual(t, "c", "b")
+		GreaterOrEqual(t, "c", "c")
+
+		GreaterOrEqual(t, 0.3, 0.2)
+		GreaterOrEqual(t, 0.3, 0.3)
+
+		GreaterOrEqual(t, uint32(3), uint32(2))
+		GreaterOrEqual(t, uint32(3), uint32(3))
+	})
+	mt.Fail(func(t Testing) {
+		GreaterOrEqual(t, 1, 2)
+		GreaterOrEqual(t, "a", "b")
+		GreaterOrEqual(t, 0.1, 0.2)
+		GreaterOrEqual(t, uint32(1), uint32(2))
 	})
 }

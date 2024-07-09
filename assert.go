@@ -5,6 +5,7 @@
 package fst
 
 import (
+	"cmp"
 	"slices"
 	"strings"
 )
@@ -24,6 +25,42 @@ func NotEqual[T any](t Testing, expected T, actual T) {
 	}
 	if equal(expected, actual) {
 		t.Fatalf("Should not equal: %#v", actual)
+	}
+}
+
+func Less[T cmp.Ordered](t Testing, x T, y T) {
+	if h, ok := t.(Helper); ok {
+		h.Helper()
+	}
+	if cmp.Compare(x, y) != -1 {
+		t.Fatalf(`"%v" is not less than "%v"`, x, y)
+	}
+}
+
+func LessOrEqual[T cmp.Ordered](t Testing, x T, y T) {
+	if h, ok := t.(Helper); ok {
+		h.Helper()
+	}
+	if cmp.Compare(x, y) == 1 {
+		t.Fatalf(`"%v" is not less than or equal to "%v"`, x, y)
+	}
+}
+
+func Greater[T cmp.Ordered](t Testing, x T, y T) {
+	if h, ok := t.(Helper); ok {
+		h.Helper()
+	}
+	if cmp.Compare(x, y) != 1 {
+		t.Fatalf(`"%v" is not greater than "%v"`, x, y)
+	}
+}
+
+func GreaterOrEqual[T cmp.Ordered](t Testing, x T, y T) {
+	if h, ok := t.(Helper); ok {
+		h.Helper()
+	}
+	if cmp.Compare(x, y) == -1 {
+		t.Fatalf(`"%v" is not greater than or equal to "%v"`, x, y)
 	}
 }
 
