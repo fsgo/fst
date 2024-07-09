@@ -5,6 +5,7 @@
 package fst
 
 import (
+	"fmt"
 	"io"
 	"testing"
 )
@@ -226,5 +227,28 @@ func TestGreaterOrEqual(t *testing.T) {
 		GreaterOrEqual(t, "a", "b")
 		GreaterOrEqual(t, 0.1, 0.2)
 		GreaterOrEqual(t, uint32(1), uint32(2))
+	})
+}
+
+func TestErrorIs(t *testing.T) {
+	mt := newMyTesting(t)
+	mt.Success(func(t Testing) {
+		ErrorIs(t, io.EOF, io.EOF)
+		ErrorIs(t, fmt.Errorf("%w ,ok", io.EOF), io.EOF)
+	})
+	mt.Fail(func(t Testing) {
+		ErrorIs(t, nil, io.EOF)
+		ErrorIs(t, io.EOF, fmt.Errorf("%w ,ok", io.EOF))
+	})
+}
+
+func TestNotErrorIs(t *testing.T) {
+	mt := newMyTesting(t)
+	mt.Success(func(t Testing) {
+		NotErrorIs(t, nil, io.EOF)
+		NotErrorIs(t, io.EOF, fmt.Errorf("%w ,ok", io.EOF))
+	})
+	mt.Fail(func(t Testing) {
+		NotErrorIs(t, io.EOF, io.EOF)
 	})
 }

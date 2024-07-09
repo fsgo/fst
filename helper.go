@@ -6,7 +6,11 @@ package fst
 
 // from https://github.com/stretchr/testify
 
-import "reflect"
+import (
+	"errors"
+	"fmt"
+	"reflect"
+)
 
 func equal(a any, b any) bool {
 	if a == nil && b == nil {
@@ -76,4 +80,18 @@ func samePointers(first, second any) bool {
 
 	// compare pointer addresses
 	return first == second
+}
+
+func buildErrorChainString(err error) string {
+	if err == nil {
+		return ""
+	}
+
+	e := errors.Unwrap(err)
+	chain := fmt.Sprintf("%q", err.Error())
+	for e != nil {
+		chain += fmt.Sprintf("\n\t%q", e.Error())
+		e = errors.Unwrap(e)
+	}
+	return chain
 }

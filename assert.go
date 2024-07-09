@@ -6,6 +6,7 @@ package fst
 
 import (
 	"cmp"
+	"errors"
 	"slices"
 	"strings"
 )
@@ -80,6 +81,46 @@ func NoError(t Testing, err error) {
 	if err != nil {
 		t.Fatalf("Received unexpected error:\n%+v", err)
 	}
+}
+
+func ErrorIs(t Testing, err error, target error) {
+	if h, ok := t.(Helper); ok {
+		h.Helper()
+	}
+	if errors.Is(err, target) {
+		return
+	}
+
+	var expectedText string
+	if target != nil {
+		expectedText = target.Error()
+	}
+
+	chain := buildErrorChainString(err)
+	t.Fatalf("Target error should be in err chain:\n"+
+		"expected: %q\n"+
+		"in chain: %s", expectedText, chain,
+	)
+}
+
+func NotErrorIs(t Testing, err error, target error) {
+	if h, ok := t.(Helper); ok {
+		h.Helper()
+	}
+	if !errors.Is(err, target) {
+		return
+	}
+
+	var expectedText string
+	if target != nil {
+		expectedText = target.Error()
+	}
+
+	chain := buildErrorChainString(err)
+	t.Fatalf("Target error should not be in err chain:\n"+
+		"expected: %q\n"+
+		"in chain: %s", expectedText, chain,
+	)
 }
 
 func True(t Testing, got bool) {
