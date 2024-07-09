@@ -68,7 +68,7 @@ func Nil(t Testing, got any) {
 		h.Helper()
 	}
 	if !isNil(got) {
-		t.Fatalf("%#v runFail not nil, but should have", got)
+		t.Fatalf("Expected nil, but got: %#v", got)
 	}
 }
 
@@ -77,7 +77,7 @@ func NotNil(t Testing, got any) {
 		h.Helper()
 	}
 	if isNil(got) {
-		t.Fatalf("%#v runFail nil, but should not have", got)
+		t.Fatalf("Expected value not to be nil")
 	}
 }
 
