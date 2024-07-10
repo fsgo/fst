@@ -252,3 +252,38 @@ func TestNotErrorIs(t *testing.T) {
 		NotErrorIs(t, io.EOF, io.EOF)
 	})
 }
+
+func TestLen(t *testing.T) {
+	mt := newMyTesting(t)
+	mt.Success(func(t Testing) {
+		Len(t, "1", 1)
+		Len(t, []string{}, 0)
+		Len(t, []string{"a"}, 1)
+
+		type ss []string
+		Len(t, ss{}, 0)
+		Len(t, ss{"a"}, 1)
+	})
+
+	mt.Fail(func(t Testing) {
+		Len(t, 0, 0)
+		Len(t, []string{}, 1)
+		Len(t, []string{"a"}, 0)
+
+		type ss []string
+		Len(t, ss{}, 1)
+		Len(t, ss{"a"}, 2)
+	})
+}
+
+func TestPanic(t *testing.T) {
+	mt := newMyTesting(t)
+	mt.Success(func(t Testing) {
+		Panic(t, func() {
+			panic("ok")
+		})
+	})
+	mt.Fail(func(t Testing) {
+		Panic(t, func() {})
+	})
+}

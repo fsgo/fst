@@ -95,3 +95,13 @@ func buildErrorChainString(err error) string {
 	}
 	return chain
 }
+
+// getLen tries to get the length of an object.
+// It returns (0, false) if impossible.
+func getLen(x any) (length int, ok bool) {
+	v := reflect.ValueOf(x)
+	defer func() {
+		ok = recover() == nil
+	}()
+	return v.Len(), true
+}

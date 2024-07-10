@@ -16,7 +16,7 @@ func Equal[T any](t Testing, expected T, actual T) {
 		h.Helper()
 	}
 	if !equal(expected, actual) {
-		t.Fatalf("Not equal: \nrunFail:  %#v\n actual: %#v", expected, actual)
+		t.Fatalf("Not equal: \ngotSuccess:  %#v\n actual: %#v", expected, actual)
 	}
 }
 
@@ -70,7 +70,7 @@ func Error(t Testing, err error) {
 		h.Helper()
 	}
 	if err == nil {
-		t.Fatalf("An error is expected but runFail nil.")
+		t.Fatalf("An error is expected but gotSuccess nil.")
 	}
 }
 
@@ -232,4 +232,37 @@ func NotSamePtr(t Testing, expected any, actual any) {
 	if samePointers(expected, actual) {
 		t.Fatalf("Expected and actual point to the same object: %p %#v", expected, expected)
 	}
+}
+
+func Len(t Testing, object any, length int) {
+	if h, ok := t.(Helper); ok {
+		h.Helper()
+	}
+
+	l, ok := getLen(object)
+	if !ok {
+		t.Fatalf(`"%v" could not be applied builtin len()`, object)
+		return
+	}
+
+	if l != length {
+		t.Fatalf(`"%v" should have %d item(s), but has %d`, object, length, l)
+	}
+}
+
+func Panic(t Testing, fn func()) {
+	if h, ok := t.(Helper); ok {
+		h.Helper()
+	}
+	var re any
+	func() {
+		defer func() {
+			re = recover()
+		}()
+		fn()
+	}()
+	if re != nil {
+		return
+	}
+	t.Fatalf("func %#v should panic", fn)
 }
