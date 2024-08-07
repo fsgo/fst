@@ -18,7 +18,7 @@ func Equal[T any](t Testing, expected T, actual T) {
 		h.Helper()
 	}
 	if !equal(expected, actual) {
-		t.Fatalf("Not equal: \n expected:  %#v\n   actual: %#v", expected, actual)
+		t.Fatalf("Not equal: \n expected: %#v\n   actual: %#v", expected, actual)
 	}
 }
 
@@ -72,7 +72,7 @@ func Error(t Testing, err error) {
 		h.Helper()
 	}
 	if err == nil {
-		t.Fatalf("An error is expected but gotSuccess nil.")
+		t.Fatalf("An error is expected but got nil.")
 	}
 }
 
