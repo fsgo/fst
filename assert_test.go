@@ -99,15 +99,24 @@ func TestEmpty(t *testing.T) {
 	})
 }
 
-func TestStringContains(t *testing.T) {
+func TestContains(t *testing.T) {
 	mt := newMyTesting(t)
+	type str1 string
+	type str2 []byte
+
 	mt.Success(func(t Testing) {
-		StringContains(t, "hello", "h")
-		StringNotContains(t, "hello", "a")
+		Contains(t, "hello", "h")
+		Contains[str1](t, "hello", "h")
+		NotContains(t, "hello", "a")
+		Contains(t, []byte("hello"), []byte("h"))
+		Contains(t, str2("hello"), str2("h"))
+		NotContains(t, []byte("hello"), []byte("a"))
 	})
 	mt.Fail(func(t Testing) {
-		StringContains(t, "hello", "a")
-		StringNotContains(t, "hello", "h")
+		Contains(t, "hello", "a")
+		NotContains(t, "hello", "h")
+		Contains(t, []byte("hello"), []byte("a"))
+		NotContains(t, []byte("hello"), []byte("h"))
 	})
 }
 
@@ -285,5 +294,85 @@ func TestPanic(t *testing.T) {
 	})
 	mt.Fail(func(t Testing) {
 		Panic(t, func() {})
+	})
+}
+
+func TestHasPrefix(t *testing.T) {
+	type str1 string
+	type str2 []byte
+	mt := newMyTesting(t)
+	mt.Success(func(t Testing) {
+		HasPrefix(t, "abc", "a")
+		HasPrefix(t, "abc", "ab")
+		HasPrefix(t, "abc", "abc")
+		HasPrefix[str1](t, str1("abc"), str1("a"))
+		HasPrefix[str2](t, str2("abc"), str2("a"))
+	})
+	mt.Fail(func(t Testing) {
+		HasPrefix(t, "abc", "b")
+		HasPrefix(t, "abc", "c")
+		HasPrefix(t, "abc", "abcd")
+		HasPrefix[str1](t, str1("abc"), str1("b"))
+		HasPrefix[str2](t, str2("abc"), str2("b"))
+	})
+}
+
+func TestNotPrefix(t *testing.T) {
+	type str1 string
+	type str2 []byte
+	mt := newMyTesting(t)
+	mt.Success(func(t Testing) {
+		NotPrefix(t, "abc", "b")
+		NotPrefix(t, "abc", "c")
+		NotPrefix(t, "abc", "abcd")
+		NotPrefix[str1](t, str1("abc"), str1("b"))
+		NotPrefix[str2](t, str2("abc"), str2("b"))
+	})
+	mt.Fail(func(t Testing) {
+		NotPrefix(t, "abc", "a")
+		NotPrefix(t, "abc", "ab")
+		NotPrefix(t, "abc", "abc")
+		NotPrefix[str1](t, str1("abc"), str1("a"))
+		NotPrefix[str2](t, str2("abc"), str2("a"))
+	})
+}
+
+func TestHasSuffix(t *testing.T) {
+	type str1 string
+	type str2 []byte
+	mt := newMyTesting(t)
+	mt.Success(func(t Testing) {
+		HasSuffix(t, "abc", "c")
+		HasSuffix(t, "abc", "bc")
+		HasSuffix(t, "abc", "abc")
+		HasSuffix[str1](t, str1("abc"), str1("c"))
+		HasSuffix[str2](t, str2("abc"), str2("c"))
+	})
+	mt.Fail(func(t Testing) {
+		HasSuffix(t, "abc", "a")
+		HasSuffix(t, "abc", "ab")
+		HasSuffix(t, "abc", "abcd")
+		HasSuffix[str1](t, str1("abc"), str1("b"))
+		HasSuffix[str2](t, str2("abc"), str2("b"))
+	})
+}
+
+func TestNotSuffix(t *testing.T) {
+	type str1 string
+	type str2 []byte
+	mt := newMyTesting(t)
+	mt.Success(func(t Testing) {
+		NotSuffix(t, "abc", "a")
+		NotSuffix(t, "abc", "ab")
+		NotSuffix(t, "abc", "abcd")
+		NotSuffix[str1](t, str1("abc"), str1("b"))
+		NotSuffix[str2](t, str2("abc"), str2("b"))
+	})
+	mt.Fail(func(t Testing) {
+		NotSuffix(t, "abc", "c")
+		NotSuffix(t, "abc", "bc")
+		NotSuffix(t, "abc", "abc")
+		NotSuffix[str1](t, str1("abc"), str1("c"))
+		NotSuffix[str2](t, str2("abc"), str2("c"))
 	})
 }

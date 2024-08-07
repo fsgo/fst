@@ -5,8 +5,10 @@
 package fst
 
 import (
+	"bytes"
 	"cmp"
 	"errors"
+	"reflect"
 	"slices"
 	"strings"
 )
@@ -16,7 +18,7 @@ func Equal[T any](t Testing, expected T, actual T) {
 		h.Helper()
 	}
 	if !equal(expected, actual) {
-		t.Fatalf("Not equal: \ngotSuccess:  %#v\n actual: %#v", expected, actual)
+		t.Fatalf("Not equal: \n expected:  %#v\n   actual: %#v", expected, actual)
 	}
 }
 
@@ -178,22 +180,122 @@ func NotEmpty(t Testing, got any) {
 	}
 }
 
-func StringContains(t Testing, s string, substr string) {
+func HasPrefix[T StringByte](t Testing, s T, prefix T) {
 	if h, ok := t.(Helper); ok {
 		h.Helper()
 	}
-	if !strings.Contains(s, substr) {
-		t.Fatalf("%#v does not substr %#v", s, substr)
+	vt := reflect.ValueOf(s)
+	switch vt.Kind() {
+	case reflect.String:
+		if strings.HasPrefix(vt.String(), reflect.ValueOf(prefix).String()) {
+			return
+		}
+	case reflect.Slice:
+		if bytes.HasPrefix(vt.Bytes(), reflect.ValueOf(prefix).Bytes()) {
+			return
+		}
 	}
+	t.Fatalf("Should HasPrefix but not\n content : %q\n prefix  : %q", s, prefix)
 }
 
-func StringNotContains(t Testing, s string, substr string) {
+func NotPrefix[T StringByte](t Testing, s T, prefix T) {
 	if h, ok := t.(Helper); ok {
 		h.Helper()
 	}
-	if strings.Contains(s, substr) {
-		t.Fatalf("%#v should not substr %#v", s, substr)
+	vt := reflect.ValueOf(s)
+	switch vt.Kind() {
+	case reflect.String:
+		if !strings.HasPrefix(vt.String(), reflect.ValueOf(prefix).String()) {
+			return
+		}
+	case reflect.Slice:
+		if !bytes.HasPrefix(vt.Bytes(), reflect.ValueOf(prefix).Bytes()) {
+			return
+		}
 	}
+	t.Fatalf("Should not HasPrefix but yes\n content : %q\n prefix  : %q", s, prefix)
+}
+
+func HasSuffix[T StringByte](t Testing, s T, prefix T) {
+	if h, ok := t.(Helper); ok {
+		h.Helper()
+	}
+	vt := reflect.ValueOf(s)
+	switch vt.Kind() {
+	case reflect.String:
+		if strings.HasSuffix(vt.String(), reflect.ValueOf(prefix).String()) {
+			return
+		}
+	case reflect.Slice:
+		if bytes.HasSuffix(vt.Bytes(), reflect.ValueOf(prefix).Bytes()) {
+			return
+		}
+	}
+	t.Fatalf("Should HasSuffix but not\n content : %q\n prefix  : %q", s, prefix)
+}
+
+func NotSuffix[T StringByte](t Testing, s T, prefix T) {
+	if h, ok := t.(Helper); ok {
+		h.Helper()
+	}
+	vt := reflect.ValueOf(s)
+	switch vt.Kind() {
+	case reflect.String:
+		if !strings.HasSuffix(vt.String(), reflect.ValueOf(prefix).String()) {
+			return
+		}
+	case reflect.Slice:
+		if !bytes.HasSuffix(vt.Bytes(), reflect.ValueOf(prefix).Bytes()) {
+			return
+		}
+	}
+	t.Fatalf("Should not HasSuffix but yes\n content : %q\n prefix  : %q", s, prefix)
+}
+
+func Contains[T StringByte](t Testing, s T, substr T) {
+	if h, ok := t.(Helper); ok {
+		h.Helper()
+	}
+	vt := reflect.ValueOf(s)
+	switch vt.Kind() {
+	case reflect.String:
+		if strings.Contains(vt.String(), reflect.ValueOf(substr).String()) {
+			return
+		}
+	case reflect.Slice:
+		if bytes.Contains(vt.Bytes(), reflect.ValueOf(substr).Bytes()) {
+			return
+		}
+	}
+	t.Fatalf("%#v should not substr %#v", s, substr)
+}
+
+func NotContains[T StringByte](t Testing, s T, substr T) {
+	if h, ok := t.(Helper); ok {
+		h.Helper()
+	}
+	vt := reflect.ValueOf(s)
+	switch vt.Kind() {
+	case reflect.String:
+		if !strings.Contains(vt.String(), reflect.ValueOf(substr).String()) {
+			return
+		}
+	case reflect.Slice:
+		if !bytes.Contains(vt.Bytes(), reflect.ValueOf(substr).Bytes()) {
+			return
+		}
+	}
+	t.Fatalf("%#v should not substr %#v", s, substr)
+}
+
+// Deprecated: use Contains instead
+func StringContains(t Testing, s string, substr string) {
+	Contains(t, s, substr)
+}
+
+// Deprecated: use NotContains instead
+func StringNotContains(t Testing, s string, substr string) {
+	NotContains(t, s, substr)
 }
 
 func SliceContains[S ~[]E, E comparable](t Testing, values S, item E) {
