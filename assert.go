@@ -288,16 +288,6 @@ func NotContains[T StringByte](t Testing, s T, substr T) {
 	t.Fatalf("%#v should not substr %#v", s, substr)
 }
 
-// Deprecated: use Contains instead
-func StringContains(t Testing, s string, substr string) {
-	Contains(t, s, substr)
-}
-
-// Deprecated: use NotContains instead
-func StringNotContains(t Testing, s string, substr string) {
-	NotContains(t, s, substr)
-}
-
 func SliceContains[S ~[]E, E comparable](t Testing, values S, item E) {
 	if h, ok := t.(Helper); ok {
 		h.Helper()
