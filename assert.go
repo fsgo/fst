@@ -105,6 +105,28 @@ func ErrorIs(t Testing, err error, target error) {
 	)
 }
 
+func ErrorContains(t Testing, err error, substr string) {
+	if h, ok := t.(Helper); ok {
+		h.Helper()
+	}
+	et := err.Error()
+	if strings.Contains(et, substr) {
+		return
+	}
+	t.Fatalf("error %q should contains %q", et, substr)
+}
+
+func ErrorNotContains(t Testing, err error, substr string) {
+	if h, ok := t.(Helper); ok {
+		h.Helper()
+	}
+	et := err.Error()
+	if !strings.Contains(et, substr) {
+		return
+	}
+	t.Fatalf("error %q should not contains %q", et, substr)
+}
+
 func NotErrorIs(t Testing, err error, target error) {
 	if h, ok := t.(Helper); ok {
 		h.Helper()
@@ -303,6 +325,36 @@ func SliceNotContains[S ~[]E, E comparable](t Testing, values S, item E) {
 	}
 	if slices.Contains(values, item) {
 		t.Fatalf("%#v should not contains %#v", values, item)
+	}
+}
+
+// SliceSortEqual 将两个 slice 排序后比较内容是否一样
+func SliceSortEqual[S ~[]E, E cmp.Ordered](t Testing, expected S, actual S) {
+	if h, ok := t.(Helper); ok {
+		h.Helper()
+	}
+	expected = slices.Clone(expected)
+	slices.Sort(expected)
+
+	actual = slices.Clone(actual)
+	slices.Sort(actual)
+	if !equal(expected, actual) {
+		t.Fatalf("Not equal: \n expected: %#v\n   actual: %#v", expected, actual)
+	}
+}
+
+// SliceSortNotEqual 将两个 slice 排序后比较内容是否不一样
+func SliceSortNotEqual[S ~[]E, E cmp.Ordered](t Testing, expected S, actual S) {
+	if h, ok := t.(Helper); ok {
+		h.Helper()
+	}
+	expected = slices.Clone(expected)
+	slices.Sort(expected)
+
+	actual = slices.Clone(actual)
+	slices.Sort(actual)
+	if equal(expected, actual) {
+		t.Fatalf("Values should not be equal:\n  expected:  %#v\n  actual: %#v", expected, actual)
 	}
 }
 
